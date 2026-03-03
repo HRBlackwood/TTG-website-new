@@ -1,0 +1,40 @@
+---
+description: How to deploy this project from Cursor to GitHub
+alwaysApply: true
+---
+
+# Deploying to GitHub
+
+**Repository:** https://github.com/HRBlackwood/TTG-website-new.git  
+**Branch:** `main`  
+**Shell:** PowerShell — use `;` to chain commands, NOT `&&`
+
+## Deploy Steps
+
+```powershell
+git add .
+git commit -m "your message here"
+git push origin main
+```
+
+## If Push is Denied (Wrong Account)
+
+Clear cached credentials, then push again:
+
+```powershell
+cmdkey /delete:git:https://github.com; git push origin main
+```
+
+A browser window will open — sign in as **HRBlackwood**.
+
+## Git Identity
+
+Already configured globally:
+- **Name:** Hunter Blackwood
+- **Email:** HRBlackwood@users.noreply.github.com
+
+## Notes
+
+- Remote is named `origin` and points to the TTG-website-new repo
+- All project files live in `c:\Users\Hunter Blackwood\tabletop-guild\`
+- Never use `git push --force` unless explicitly asked
