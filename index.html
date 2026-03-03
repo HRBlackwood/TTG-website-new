@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Townsville Tabletop Guild — JCU</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- ── NAVIGATION ─────────────────────────────────────────────── -->
+  <nav id="navbar">
+    <div class="nav-inner">
+      <a href="#hero" class="nav-logo">
+        <span class="logo-icon">⚔</span>
+        <span>TTG · JCU</span>
+      </a>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#about">About</a></li>
+        <li><a href="#games">Games</a></li>
+        <li><a href="#events">Events</a></li>
+        <li><a href="https://discord.gg/kM7JYABH" target="_blank" rel="noopener noreferrer" class="nav-discord">Discord</a></li>
+        <li><a href="#join" class="nav-cta">Join the Guild</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ── HERO ───────────────────────────────────────────────────── -->
+  <section id="hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-particles" id="particles"></div>
+    <div class="hero-content">
+      <p class="hero-eyebrow">James Cook University · Townsville</p>
+      <h1 class="hero-title">Townsville<br />Tabletop<br /><span class="hero-accent">Guild</span></h1>
+      <p class="hero-subtitle">
+        Roll the dice. Move your armies. Cast your spells.<br />
+        Find your people at JCU.
+      </p>
+      <div class="hero-actions">
+        <a href="#join" class="btn btn-primary">Join the Guild</a>
+        <a href="#about" class="btn btn-ghost">Learn More</a>
+      </div>
+      <div class="hero-scroll-hint">
+        <span>Scroll to explore</span>
+        <div class="scroll-arrow"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── ABOUT ──────────────────────────────────────────────────── -->
+  <section id="about">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-eyebrow">Who We Are</p>
+        <h2 class="section-title">Welcome to the Guild</h2>
+        <div class="section-divider"><span>⚜</span></div>
+      </div>
+
+      <div class="about-grid">
+        <div class="about-text">
+          <p class="lead">
+            Townsville Tabletop Guild is the official tabletop gaming club of James Cook
+            University. Whether you're rolling a natural 20, commanding Space Marines,
+            or playing a land on turn one — you belong here.
+          </p>
+          <p>
+            We run sessions four days a week in a relaxed, inclusive environment where
+            you can learn new games, find regular groups, and make friends who share
+            your passion. No experience required — just bring your enthusiasm.
+          </p>
+          <p>
+            The Guild provides a shared library of board games, loaner rulebooks, dice
+            and tokens, and a welcoming community that spans all skill levels. Open to
+            all current JCU students and anyone 18 years or older.
+          </p>
+        </div>
+
+        <div class="about-stats">
+          <div class="stat-card">
+            <span class="stat-number">120<span class="stat-plus">+</span></span>
+            <span class="stat-label">Active Members</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-number">50<span class="stat-plus">+</span></span>
+            <span class="stat-label">Board Games in Library</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-number">4</span>
+            <span class="stat-label">Ongoing Campaigns</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-number">Weekly</span>
+            <span class="stat-label">Meetups</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="meeting-info">
+        <div class="meeting-card">
+          <div class="meeting-icon">📅</div>
+          <div>
+            <h3>When</h3>
+            <p>Mon &amp; Fri 5:30–11 pm · Wed 5:30–11 pm · Sat 11 am–5 pm</p>
+          </div>
+        </div>
+        <div class="meeting-card">
+          <div class="meeting-icon">📍</div>
+          <div>
+            <h3>Where</h3>
+            <p>Building 27, JCU Townsville (Rooms 3/4, 4 &amp; 5)</p>
+          </div>
+        </div>
+        <div class="meeting-card">
+          <div class="meeting-icon">💰</div>
+          <div>
+            <h3>Membership</h3>
+            <p>$5 students · $10 non-students — free first visit</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── GAMES ──────────────────────────────────────────────────── -->
+  <section id="games">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-eyebrow">What We Play</p>
+        <h2 class="section-title">Choose Your Adventure</h2>
+        <div class="section-divider"><span>⚜</span></div>
+        <p class="section-desc">
+          The Guild covers a wide range of tabletop hobbies. Find your game — or discover a new one.
+        </p>
+      </div>
+
+      <div class="games-grid">
+
+        <div class="game-card" data-game="board">
+          <div class="game-card-inner">
+            <div class="game-card-front">
+              <div class="game-icon">🎲</div>
+              <h3>Board Games</h3>
+              <p>Strategy, co-op, party, and everything in between</p>
+              <span class="game-flip-hint">Tap to learn more</span>
+            </div>
+            <div class="game-card-back">
+              <h3>Board Games</h3>
+              <p>
+                From gateway games like <em>Catan</em> and <em>Ticket to Ride</em>
+                to complex strategy titles like <em>Twilight Imperium</em> and
+                <em>Spirit Island</em>. Our lending library has over 50 titles ready to play.
+              </p>
+              <ul>
+                <li>Open play every session</li>
+                <li>Teach-a-game nights for new players</li>
+                <li>Monthly tournament events</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="game-card" data-game="dnd">
+          <div class="game-card-inner">
+            <div class="game-card-front">
+              <div class="game-icon game-icon--img">
+                <img src="dnd-logo.png" alt="Dungeons & Dragons logo" class="logo-screen" />
+              </div>
+              <h3>Dungeons & Dragons</h3>
+              <p>Epic quests, legendary heroes, unforgettable stories</p>
+              <span class="game-flip-hint">Tap to learn more</span>
+            </div>
+            <div class="game-card-back">
+              <h3>Dungeons & Dragons</h3>
+              <p>
+                We run multiple ongoing 5e campaigns as well as one-shot adventure
+                nights for newcomers. Whether you want to dungeon-master or roll your
+                first character, the Guild has a seat at the table for you.
+              </p>
+              <ul>
+                <li>4 active campaigns</li>
+                <li>Beginner one-shots every month</li>
+                <li>Shared miniature and terrain collection</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="game-card" data-game="warhammer">
+          <div class="game-card-inner">
+            <div class="game-card-front">
+              <div class="game-icon game-icon--img">
+                <img src="warhammer-logo.png" alt="Warhammer logo" class="logo-invert" />
+              </div>
+              <h3>Warhammer 40,000</h3>
+              <p>Forge worlds, paint armies, conquer the galaxy</p>
+              <span class="game-flip-hint">Tap to learn more</span>
+            </div>
+            <div class="game-card-back">
+              <h3>Warhammer 40,000</h3>
+              <p>
+                The 41st Millennium awaits. We host matched play, narrative campaigns,
+                and a dedicated painting station. Borrow starter armies to try the game
+                before investing in your own force.
+              </p>
+              <ul>
+                <li>Loaner starter armies available</li>
+                <li>Dedicated painting nights</li>
+                <li>Narrative &amp; matched play leagues</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="game-card" data-game="mtg">
+          <div class="game-card-inner">
+            <div class="game-card-front">
+              <div class="game-icon game-icon--img">
+                <img src="mtg-logo.png" alt="Magic: The Gathering logo" class="logo-invert" />
+              </div>
+              <h3>Magic: The Gathering</h3>
+              <p>Draft, Commander, Standard — all formats welcome</p>
+              <span class="game-flip-hint">Tap to learn more</span>
+            </div>
+            <div class="game-card-back">
+              <h3>Magic: The Gathering</h3>
+              <p>
+                From Friday Night Magic-style drafts to casual Commander pods,
+                the Guild's MTG community is active every session. Starter decks
+                available to borrow if you're just learning.
+              </p>
+              <ul>
+                <li>Weekly Commander pods</li>
+                <li>Draft nights each month</li>
+                <li>Loaner starter decks</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── EVENTS ─────────────────────────────────────────────────── -->
+  <section id="events">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-eyebrow">What's On</p>
+        <h2 class="section-title">Events &amp; Timetable</h2>
+        <div class="section-divider"><span>⚜</span></div>
+        <p class="section-desc">We run sessions across four days every week. All events are held at Building 27, JCU Townsville.</p>
+      </div>
+
+      <!-- Weekly schedule -->
+      <div class="schedule-grid">
+
+        <div class="schedule-card" style="--day-color:#2dd4bf;">
+          <div class="schedule-day" style="background:#2dd4bf;">MON</div>
+          <div class="schedule-body">
+            <span class="event-tag tag-dnd">TTRPG Night</span>
+            <h3>TTRPG Night</h3>
+            <p>Tabletop role-playing sessions. Check our TTRPG schedule for information on current groups.</p>
+            <ul class="schedule-meta">
+              <li>🕠 5:30 PM – 11:00 PM</li>
+              <li>📍 Building 27, Room 3/4</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="schedule-card" style="--day-color:#e040fb;">
+          <div class="schedule-day" style="background:#e040fb;">WED</div>
+          <div class="schedule-body">
+            <span class="event-tag tag-board">Board &amp; Card Games</span>
+            <h3>Board &amp; Card Games</h3>
+            <p>Open to all — bring a game or borrow one from our library. All skill levels welcome.</p>
+            <ul class="schedule-meta">
+              <li>🕠 5:30 PM – 11:00 PM</li>
+              <li>📍 Building 27, Room 4</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="schedule-card" style="--day-color:#f59e0b;">
+          <div class="schedule-day" style="background:#f59e0b;">FRI</div>
+          <div class="schedule-body">
+            <span class="event-tag tag-dnd">TTRPG Night</span>
+            <h3>TTRPG Night</h3>
+            <p>Tabletop role-playing sessions. Check our TTRPG schedule for information on current groups.</p>
+            <ul class="schedule-meta">
+              <li>🕠 5:30 PM – 11:00 PM</li>
+              <li>📍 Building 27, Room 3/4</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="schedule-card" style="--day-color:#6366f1;">
+          <div class="schedule-day" style="background:#6366f1;">SAT</div>
+          <div class="schedule-body">
+            <span class="event-tag tag-special">Variety Games</span>
+            <h3>Variety Games</h3>
+            <p>A rotating selection of games and formats. Keep an eye on our socials for posts about these events.</p>
+            <ul class="schedule-meta">
+              <li>🕙 11:00 AM – 5:00 PM</li>
+              <li>📍 Building 27, Room 5</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Poster + notes -->
+      <div class="events-lower">
+        <div class="events-notes">
+          <h3>Notes</h3>
+          <ul class="notes-list">
+            <li>
+              <span class="note-label" style="background:#2dd4bf22;color:#2dd4bf;border-color:#2dd4bf44;">TTRPG Nights</span>
+              Please view our TTRPG schedule for information on current groups running on Monday and Friday nights.
+            </li>
+            <li>
+              <span class="note-label" style="background:#e040fb22;color:#e040fb;border-color:#e040fb44;">Board &amp; Card Games</span>
+              Wednesday sessions are open to all — no booking required, just turn up and play.
+            </li>
+            <li>
+              <span class="note-label" style="background:#6366f122;color:#a5b4fc;border-color:#6366f144;">Variety Games</span>
+              Saturday events vary each week. Follow us on Facebook and Discord for announcements.
+            </li>
+          </ul>
+        </div>
+
+        <div class="events-poster">
+          <img src="events-poster.png" alt="Townsville Tabletop Guild 2026 T1 Events Calendar poster" />
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── DISCORD ───────────────────────────────────────────────── -->
+  <section id="discord">
+    <div class="container">
+      <div class="discord-banner">
+        <div class="discord-glow"></div>
+        <div class="discord-content">
+          <div class="discord-logo" aria-hidden="true">
+            <svg width="52" height="40" viewBox="0 0 71 55" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M60.105 4.898A58.55 58.55 0 0 0 45.806.418a.22.22 0 0 0-.233.11 40.784 40.784 0 0 0-1.8 3.697c-5.456-.817-10.886-.817-16.23 0-.485-1.162-1.2-2.587-1.822-3.697a.228.228 0 0 0-.233-.11 58.386 58.386 0 0 0-14.3 4.48.207.207 0 0 0-.095.082C1.578 18.73-.944 32.144.293 45.39a.244.244 0 0 0 .093.166c6.016 4.415 11.845 7.094 17.568 8.86a.23.23 0 0 0 .25-.082 42.08 42.08 0 0 0 3.626-5.9.225.225 0 0 0-.123-.312 38.772 38.772 0 0 1-5.539-2.64.228.228 0 0 1-.022-.378c.372-.279.744-.569 1.1-.862a.22.22 0 0 1 .23-.031c11.62 5.305 24.198 5.305 35.68 0a.219.219 0 0 1 .232.028c.356.293.728.586 1.103.865a.228.228 0 0 1-.02.378 36.384 36.384 0 0 1-5.54 2.637.227.227 0 0 0-.12.315 47.249 47.249 0 0 0 3.623 5.897.225.225 0 0 0 .25.084c5.745-1.766 11.574-4.445 17.59-8.86a.227.227 0 0 0 .092-.163c1.466-15.175-2.458-28.483-10.4-40.24a.179.179 0 0 0-.092-.084zm-35.98 32.303c-3.498 0-6.38-3.212-6.38-7.156 0-3.944 2.826-7.156 6.38-7.156 3.582 0 6.437 3.24 6.38 7.156 0 3.944-2.826 7.156-6.38 7.156zm23.593 0c-3.498 0-6.38-3.212-6.38-7.156 0-3.944 2.826-7.156 6.38-7.156 3.582 0 6.437 3.24 6.38 7.156 0 3.944-2.798 7.156-6.38 7.156z" fill="currentColor"/>
+            </svg>
+          </div>
+          <div class="discord-text">
+            <h2>Join us on Discord</h2>
+            <p>Stay up to date with session announcements, find group members, chat between meetups, and get help from the exec team — all in one place.</p>
+          </div>
+          <a href="https://discord.gg/kM7JYABH" target="_blank" rel="noopener noreferrer" class="btn btn-discord">
+            Join the Server
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </a>
+        </div>
+        <div class="discord-invite-code">
+          discord.gg/kM7JYABH
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── JOIN / REGISTER ────────────────────────────────────────── -->
+  <section id="join">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-eyebrow">Become a Member</p>
+        <h2 class="section-title">Join the Guild</h2>
+        <div class="section-divider"><span>⚜</span></div>
+        <p class="section-desc">
+          Complete the 2026 membership form below to have your membership approved.
+        </p>
+      </div>
+
+      <div class="form-wrapper">
+
+        <div class="form-intro-banner">
+          <h3>TTG 2026 Membership</h3>
+          <p>Please enter your details into this form in order to have your membership approved.</p>
+          <p>If there are any issues or you have any questions, please contact an Executive Committee member over <strong>Facebook</strong> or <a href="https://discord.gg/kM7JYABH" target="_blank" rel="noopener noreferrer">Discord</a>.</p>
+        </div>
+
+        <form id="registrationForm" novalidate>
+
+          <!-- Name -->
+          <div class="form-row">
+            <div class="form-group">
+              <label for="firstName">First Name <span class="required">*</span></label>
+              <input type="text" id="firstName" name="firstName" placeholder="Your first name" required />
+              <span class="field-error" id="firstNameError"></span>
+            </div>
+            <div class="form-group">
+              <label for="lastName">Last Name <span class="required">*</span></label>
+              <input type="text" id="lastName" name="lastName" placeholder="Your last name" required />
+              <span class="field-error" id="lastNameError"></span>
+            </div>
+          </div>
+
+          <!-- Student ID -->
+          <div class="form-group">
+            <label for="studentId">JCU Student ID <span class="optional">(if applicable)</span></label>
+            <input type="text" id="studentId" name="studentId" placeholder="e.g. jc123456" />
+            <span class="field-error" id="studentIdError"></span>
+          </div>
+
+          <!-- Contact -->
+          <div class="form-row">
+            <div class="form-group">
+              <label for="phone">Phone Number <span class="required">*</span></label>
+              <input type="tel" id="phone" name="phone" placeholder="04XX XXX XXX" required />
+              <span class="field-error" id="phoneError"></span>
+            </div>
+            <div class="form-group">
+              <label for="email">Email Address <span class="required">*</span></label>
+              <input type="email" id="email" name="email" placeholder="your@email.com" required />
+              <span class="field-error" id="emailError"></span>
+            </div>
+          </div>
+
+          <!-- Emergency contact -->
+          <div class="form-row">
+            <div class="form-group">
+              <label for="emergencyName">Emergency Contact Name <span class="required">*</span></label>
+              <input type="text" id="emergencyName" name="emergencyName" placeholder="Full name" required />
+              <span class="field-error" id="emergencyNameError"></span>
+            </div>
+            <div class="form-group">
+              <label for="emergencyNumber">Emergency Contact Number <span class="required">*</span></label>
+              <input type="tel" id="emergencyNumber" name="emergencyNumber" placeholder="04XX XXX XXX" required />
+              <span class="field-error" id="emergencyNumberError"></span>
+            </div>
+          </div>
+
+          <!-- Games of interest -->
+          <div class="form-group">
+            <label>Games of Interest <span class="optional">(select all that apply)</span></label>
+            <div class="checkbox-grid">
+              <label class="checkbox-card">
+                <input type="checkbox" name="games" value="board-games" />
+                <span class="checkbox-visual">🎲</span>
+                <span>Board Games</span>
+              </label>
+              <label class="checkbox-card">
+                <input type="checkbox" name="games" value="dnd" />
+                <span class="checkbox-visual checkbox-visual--img"><img src="dnd-logo.png" alt="D&D" class="logo-screen" /></span>
+                <span>D&D</span>
+              </label>
+              <label class="checkbox-card">
+                <input type="checkbox" name="games" value="warhammer" />
+                <span class="checkbox-visual checkbox-visual--img"><img src="warhammer-logo.png" alt="Warhammer 40K" class="logo-invert" /></span>
+                <span>Warhammer 40K</span>
+              </label>
+              <label class="checkbox-card">
+                <input type="checkbox" name="games" value="mtg" />
+                <span class="checkbox-visual checkbox-visual--img"><img src="mtg-logo.png" alt="Magic: TG" class="logo-invert" /></span>
+                <span>Magic: TG</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Club Rules -->
+          <div class="form-group">
+            <label>Club Rules Agreement <span class="required">*</span></label>
+            <p class="field-hint">Please read and agree to each of the following TTG club rules.</p>
+            <div class="rules-box">
+              <ul class="rules-list">
+                <li>No meta-gaming, with respect to the context of the specific event.</li>
+                <li>The event coordinator / game master's decisions are final, with regards to rules queries or discrepancies (for D&amp;D specifically, all published Wizards of the Coast material will be allowed).</li>
+                <li>Zero tolerance policy for breaching event consent rules, as dictated by the event coordinator / game master.</li>
+                <li>Be respectful of other members and their / the club's property. Ask before using the club's equipment and return any borrowed equipment by the end of each event. Treat people with respect and follow the consent rules as listed in the Consent section.</li>
+                <li>Be respectful of the event space during club events, including cleanliness and excessive noise.</li>
+                <li>I understand to report any issues to the event coordinators / night managers.</li>
+                <li>I understand that to be a member of TTG I must be either a current JCU Student <strong>OR</strong> 18+ years old.</li>
+              </ul>
+            </div>
+            <label class="checkbox-inline rule-agree-check">
+              <input type="checkbox" id="rulesAgreed" name="rulesAgreed" required />
+              <span>I agree to all of the above TTG club rules. <span class="required">*</span></span>
+            </label>
+            <span class="field-error" id="rulesAgreedError"></span>
+          </div>
+
+          <!-- Payment method -->
+          <div class="form-group">
+            <label for="paymentMethod">Method of Membership Fee Payment <span class="required">*</span></label>
+            <div class="payment-info-card">
+              <p>Membership fee</p>
+              <div class="payment-details">
+                <span><strong>JCU Students:</strong> $5 per semester</span>
+                <span><strong>Non-students:</strong> $10 per semester</span>
+              </div>
+              <div class="payment-details" style="margin-top:10px;">
+                <span><strong>BSB:</strong> 064-823</span>
+                <span><strong>Account No.:</strong> 11141737</span>
+              </div>
+            </div>
+            <div class="select-wrapper">
+              <select id="paymentMethod" name="paymentMethod" required>
+                <option value="" disabled selected>Select payment method</option>
+                <option value="online-transfer">Online Bank Transfer</option>
+                <option value="cash">Cash (in person)</option>
+                <option value="card">Card (in person)</option>
+              </select>
+            </div>
+            <span class="field-error" id="paymentMethodError"></span>
+          </div>
+
+          <!-- Payment date -->
+          <div class="form-group">
+            <label for="paymentDate">Date of Membership Fee Payment <span class="required">*</span></label>
+            <input type="date" id="paymentDate" name="paymentDate" required />
+            <span class="field-error" id="paymentDateError"></span>
+          </div>
+
+          <!-- Anything else -->
+          <div class="form-group">
+            <label for="message">Anything Else? <span class="optional">(optional)</span></label>
+            <textarea id="message" name="message" rows="4" placeholder="Questions, a game you'd love to play, or just a wave hello..."></textarea>
+          </div>
+
+          <!-- Communications consent -->
+          <div class="form-group form-group--checkbox">
+            <label class="checkbox-inline">
+              <input type="checkbox" id="consent" name="consent" required />
+              <span>I agree to receive communications from Townsville Tabletop Guild about events and club news. <span class="required">*</span></span>
+            </label>
+            <span class="field-error" id="consentError"></span>
+          </div>
+
+          <div class="form-submit">
+            <button type="submit" class="btn btn-primary btn-large" id="submitBtn">
+              <span class="btn-text">Roll for Membership</span>
+              <span class="btn-icon">🎲</span>
+            </button>
+          </div>
+
+        </form>
+
+        <!-- Success state -->
+        <div class="form-success" id="formSuccess" hidden>
+          <div class="success-icon">🎉</div>
+          <h3>You're in the Guild!</h3>
+          <p>Thanks for registering. We'll send you a welcome email with all the details for your first session.</p>
+          <p><em>May your dice rolls be ever in your favour.</em></p>
+          <a href="#about" class="btn btn-ghost">Back to top</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ─────────────────────────────────────────────────── -->
+  <footer id="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="#hero" class="nav-logo">
+            <span class="logo-icon">⚔</span>
+            <span>TTG · JCU</span>
+          </a>
+          <p>The official tabletop gaming club of James Cook University, Townsville.</p>
+          <div class="footer-socials">
+            <a href="https://discord.gg/kM7JYABH" target="_blank" rel="noopener noreferrer" aria-label="Discord" class="social-link social-link--discord">Discord</a>
+            <a href="#" aria-label="Facebook" class="social-link">Facebook</a>
+            <a href="#" aria-label="Instagram" class="social-link">Instagram</a>
+          </div>
+        </div>
+
+        <div class="footer-nav">
+          <h4>Navigate</h4>
+          <ul>
+            <li><a href="#about">About</a></li>
+            <li><a href="#games">Games</a></li>
+            <li><a href="#events">Events</a></li>
+            <li><a href="#join">Join the Guild</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-nav">
+          <h4>Contact</h4>
+          <ul>
+            <li><span>Building 27, JCU Townsville</span></li>
+            <li><span>Mon &amp; Fri 5:30–11 pm · Wed 5:30–11 pm</span></li>
+            <li><span>Sat 11 am–5 pm</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2026 Townsville Tabletop Guild · James Cook University · All rights reserved</p>
+        <a href="admin.html" class="admin-link">Admin</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

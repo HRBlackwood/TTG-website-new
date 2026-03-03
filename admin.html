@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TTG Admin — Member Registry</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="admin.css" />
+</head>
+<body>
+
+  <!-- ── LOGIN GATE ─────────────────────────────────────────── -->
+  <div id="loginScreen">
+    <div class="login-box">
+      <div class="login-logo">⚔</div>
+      <h1>TTG Admin</h1>
+      <p>Member Registry — Townsville Tabletop Guild</p>
+      <form id="loginForm" novalidate>
+        <div class="login-field">
+          <label for="adminPassword">Admin Password</label>
+          <input type="password" id="adminPassword" placeholder="Enter password" autocomplete="current-password" />
+          <span id="loginError" class="login-error"></span>
+        </div>
+        <button type="submit" class="btn-login">Unlock Dashboard</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ── DASHBOARD ──────────────────────────────────────────── -->
+  <div id="dashboard" hidden>
+
+    <header class="admin-header">
+      <div class="admin-header-inner">
+        <div class="admin-brand">
+          <span class="logo-icon">⚔</span>
+          <div>
+            <h1>TTG Admin</h1>
+            <span>Member Registry</span>
+          </div>
+        </div>
+        <div class="admin-header-actions">
+          <a href="index.html" class="btn-secondary">← Back to Site</a>
+          <button id="exportBtn" class="btn-secondary">Export CSV</button>
+          <button id="logoutBtn" class="btn-ghost-sm">Log Out</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="admin-main">
+
+      <!-- Stats row -->
+      <div class="stats-row" id="statsRow">
+        <div class="stat-tile">
+          <span class="stat-tile-number" id="statTotal">0</span>
+          <span class="stat-tile-label">Total Members</span>
+        </div>
+        <div class="stat-tile">
+          <span class="stat-tile-number" id="statStudents">0</span>
+          <span class="stat-tile-label">JCU Students</span>
+        </div>
+        <div class="stat-tile">
+          <span class="stat-tile-number" id="statOnline">0</span>
+          <span class="stat-tile-label">Online Payments</span>
+        </div>
+        <div class="stat-tile">
+          <span class="stat-tile-number" id="statNewest">—</span>
+          <span class="stat-tile-label">Latest Sign-up</span>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="table-controls">
+        <input type="search" id="searchInput" placeholder="Search by name, email, student ID…" />
+        <div class="filter-group">
+          <select id="filterGame">
+            <option value="">All Games</option>
+            <option value="board-games">Board Games</option>
+            <option value="dnd">D&D</option>
+            <option value="warhammer">Warhammer 40K</option>
+            <option value="mtg">Magic: TG</option>
+          </select>
+          <select id="filterPayment">
+            <option value="">All Payment Types</option>
+            <option value="online-transfer">Online Transfer</option>
+            <option value="cash">Cash</option>
+            <option value="card">Card</option>
+          </select>
+        </div>
+        <button id="clearFiltersBtn" class="btn-ghost-sm">Clear Filters</button>
+      </div>
+
+      <!-- Table -->
+      <div class="table-wrapper">
+        <table id="memberTable">
+          <thead>
+            <tr>
+              <th data-sort="submittedAt"># <span class="sort-icon">↕</span></th>
+              <th data-sort="firstName">Name <span class="sort-icon">↕</span></th>
+              <th data-sort="studentId">Student ID <span class="sort-icon">↕</span></th>
+              <th data-sort="email">Contact <span class="sort-icon">↕</span></th>
+              <th>Emergency Contact</th>
+              <th>Games</th>
+              <th data-sort="paymentMethod">Payment <span class="sort-icon">↕</span></th>
+              <th data-sort="paymentDate">Paid Date <span class="sort-icon">↕</span></th>
+              <th data-sort="submittedAt">Registered <span class="sort-icon">↕</span></th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="memberTableBody">
+          </tbody>
+        </table>
+        <div id="emptyState" class="empty-state" hidden>
+          <div class="empty-icon">🎲</div>
+          <h3>No members yet</h3>
+          <p>Once someone completes the registration form on the main site, they'll appear here.</p>
+        </div>
+        <div id="noResults" class="empty-state" hidden>
+          <div class="empty-icon">🔍</div>
+          <h3>No results found</h3>
+          <p>Try adjusting your search or filters.</p>
+        </div>
+      </div>
+
+      <div class="table-footer" id="tableFooter">
+        <span id="resultCount"></span>
+        <button id="clearAllBtn" class="btn-danger">Delete All Records</button>
+      </div>
+
+    </main>
+
+    <!-- Member detail modal -->
+    <div id="memberModal" class="modal-backdrop" hidden>
+      <div class="modal">
+        <button class="modal-close" id="modalClose">✕</button>
+        <h2 id="modalName"></h2>
+        <div class="modal-grid" id="modalGrid"></div>
+        <div class="modal-actions">
+          <button class="btn-danger-sm" id="modalDelete">Delete Member</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+</html>
