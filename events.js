@@ -1,3 +1,16 @@
+const UPCOMING_EVENTS_KEY = 'ttg_upcoming_events';
+
+function parseEvents() {
+  try {
+    const raw = localStorage.getItem(UPCOMING_EVENTS_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
 function formatDate(value) {
   if (!value) return 'Date TBC';
   const d = new Date(value);
@@ -49,14 +62,4 @@ function renderEvents(events) {
   });
 }
 
-async function loadUpcomingEvents() {
-  try {
-    const result = await window.TTGApi.listUpcomingEvents();
-    renderEvents(result.events || []);
-  } catch (error) {
-    console.error('Unable to load upcoming events:', error);
-    renderEvents([]);
-  }
-}
-
-loadUpcomingEvents();
+renderEvents(parseEvents());
