@@ -2,19 +2,6 @@
    TABLE TOP GUILD — SCRIPTS
 ═══════════════════════════════════════════════════════════════ */
 
-const SITE_CONTENT_STORAGE_KEY = 'ttg_site_content';
-
-function parseSiteContent() {
-  try {
-    const raw = localStorage.getItem(SITE_CONTENT_STORAGE_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw);
-    return parsed && typeof parsed === 'object' ? parsed : null;
-  } catch {
-    return null;
-  }
-}
-
 function setText(selector, value) {
   if (!value) return;
   const node = document.querySelector(selector);
@@ -49,9 +36,8 @@ function applyEventCard(card, eventData) {
   if (eventData.location && meta[1]) meta[1].textContent = eventData.location;
 }
 
-function applySiteContentCustomizations() {
-  const content = parseSiteContent();
-  if (!content) return;
+function applySiteContentCustomizations(content) {
+  if (!content || typeof content !== 'object') return;
 
   setText('.hero-subtitle', content.heroSubtitle);
   setText('.about-text .lead', content.aboutLead);
@@ -72,7 +58,16 @@ function applySiteContentCustomizations() {
   }
 }
 
-applySiteContentCustomizations();
+async function loadSiteContentFromApi() {
+  try {
+    const result = await window.TTGApi.getSiteContent();
+    applySiteContentCustomizations(result.content || {});
+  } catch (error) {
+    console.error('Unable to load site content:', error);
+  }
+}
+
+loadSiteContentFromApi();
 
 // ── NAVBAR SCROLL EFFECT ────────────────────────────────────
 const navbar = document.getElementById('navbar');
@@ -296,7 +291,6 @@ form.addEventListener('submit', async (e) => {
   // Collect form data
   const games = [...document.querySelectorAll('input[name="games"]:checked')].map(cb => cb.value);
   const member = {
-    id:              Date.now(),
     submittedAt:     new Date().toISOString(),
     firstName:       getVal('firstName'),
     lastName:        getVal('lastName'),
@@ -311,17 +305,19 @@ form.addEventListener('submit', async (e) => {
     message:         getVal('message'),
   };
 
-  // Save to localStorage
-  const existing = JSON.parse(localStorage.getItem('ttg_members') || '[]');
-  existing.push(member);
-  localStorage.setItem('ttg_members', JSON.stringify(existing));
-
-  // Simulate submission
   submitBtn.disabled = true;
   submitBtn.querySelector('.btn-text').textContent = 'Rolling…';
   submitBtn.querySelector('.btn-icon').textContent = '⏳';
 
-  await new Promise(r => setTimeout(r, 1400));
+  try {
+    await window.TTGApi.createMember(member);
+  } catch (error) {
+    submitBtn.disabled = false;
+    submitBtn.querySelector('.btn-text').textContent = 'Roll for Membership';
+    submitBtn.querySelector('.btn-icon').textContent = '🎲';
+    alert(`Unable to submit right now: ${error.message}`);
+    return;
+  }
 
   // Show success
   form.hidden = true;

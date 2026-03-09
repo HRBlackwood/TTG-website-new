@@ -2,10 +2,9 @@
    TTG ADMIN DASHBOARD — SCRIPT
 ═══════════════════════════════════════════════════════════════ */
 
-const ADMIN_PASSWORD = 'TTGadmin2026';
-const STORAGE_KEY    = 'ttg_members';
-const CONTENT_STORAGE_KEY = 'ttg_site_content';
-const UPCOMING_EVENTS_KEY = 'ttg_upcoming_events';
+const LEGACY_MEMBERS_KEY = 'ttg_members';
+const LEGACY_EVENTS_KEY = 'ttg_upcoming_events';
+const LEGACY_CONTENT_KEY = 'ttg_site_content';
 
 // ── STATE ────────────────────────────────────────────────────
 let members      = [];
@@ -23,43 +22,113 @@ const dashboard    = document.getElementById('dashboard');
 const loginForm    = document.getElementById('loginForm');
 const loginError   = document.getElementById('loginError');
 
-loginForm.addEventListener('submit', e => {
+loginForm.addEventListener('submit', async e => {
   e.preventDefault();
   const pw = document.getElementById('adminPassword').value;
-  if (pw === ADMIN_PASSWORD) {
-    unlock();
-  } else {
+  try {
+    const result = await window.TTGApi.login(pw);
+    sessionStorage.setItem('ttg_admin_session', result.token);
+    await unlock();
+  } catch {
     loginError.textContent = 'Incorrect password. Please try again.';
     document.getElementById('adminPassword').value = '';
     document.getElementById('adminPassword').focus();
   }
 });
 
-function unlock() {
+async function unlock() {
   loginScreen.hidden = true;
   dashboard.hidden   = false;
   initSectionTabs();
-  loadMembers();
-  initContentEditor();
-  initUpcomingEventsManager();
+  await loadMembers();
+  await initContentEditor();
+  await initUpcomingEventsManager();
 }
 
-document.getElementById('logoutBtn').addEventListener('click', () => {
+document.getElementById('logoutBtn').addEventListener('click', async () => {
+  try {
+    await window.TTGApi.logout();
+  } catch (error) {
+    console.warn('Logout request failed:', error);
+  }
+  sessionStorage.removeItem('ttg_admin_session');
   loginScreen.hidden = false;
   dashboard.hidden   = true;
   document.getElementById('adminPassword').value = '';
   loginError.textContent = '';
 });
 
+document.getElementById('migrateLocalBtn').addEventListener('click', async () => {
+  if (!confirm('Import legacy local browser data into Convex now?')) return;
+  try {
+    const result = await migrateLocalDataToConvex();
+    await loadMembers();
+    await renderUpcomingEvents();
+    const content = await window.TTGApi.getSiteContent();
+    fillSiteContentForm(content.content || {});
+    alert(
+      `Migration complete.\nMembers: ${result.importedMembers}\nEvents: ${result.importedEvents}\nContent migrated: ${result.importedContent ? 'Yes' : 'No'}`
+    );
+  } catch (error) {
+    alert(`Migration failed: ${error.message}`);
+  }
+});
+
 // ── DATA ─────────────────────────────────────────────────────
-function loadMembers() {
-  members = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+async function loadMembers() {
+  const result = await window.TTGApi.listMembers();
+  members = result.members || [];
   applyFilters();
   renderStats();
 }
 
-function saveMembers() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(members));
+async function migrateLocalDataToConvex() {
+  let importedMembers = 0;
+  let importedEvents = 0;
+  let importedContent = false;
+
+  const legacyMembers = JSON.parse(localStorage.getItem(LEGACY_MEMBERS_KEY) || '[]');
+  if (Array.isArray(legacyMembers) && legacyMembers.length > 0) {
+    const sanitizedMembers = legacyMembers.map((m) => ({
+      firstName: m.firstName || '',
+      lastName: m.lastName || '',
+      studentId: m.studentId || '',
+      phone: m.phone || '',
+      email: m.email || '',
+      emergencyName: m.emergencyName || '',
+      emergencyNumber: m.emergencyNumber || '',
+      games: m.games || '',
+      paymentMethod: m.paymentMethod || '',
+      paymentDate: m.paymentDate || '',
+      message: m.message || '',
+      submittedAt: m.submittedAt || new Date().toISOString(),
+    }));
+    await window.TTGApi.importMembers(sanitizedMembers);
+    importedMembers = sanitizedMembers.length;
+  }
+
+  const legacyEvents = JSON.parse(localStorage.getItem(LEGACY_EVENTS_KEY) || '[]');
+  if (Array.isArray(legacyEvents) && legacyEvents.length > 0) {
+    for (const event of legacyEvents) {
+      await window.TTGApi.createUpcomingEvent({
+        title: event.title || '',
+        date: event.date || '',
+        time: event.time || '',
+        location: event.location || '',
+        image: event.image || '',
+        description: event.description || '',
+      });
+      importedEvents += 1;
+    }
+  }
+
+  const legacyContent = JSON.parse(localStorage.getItem(LEGACY_CONTENT_KEY) || '{}');
+  if (legacyContent && typeof legacyContent === 'object' && Object.keys(legacyContent).length > 0) {
+    await window.TTGApi.saveSiteContent(legacyContent);
+    importedContent = true;
+  }
+
+  return { importedMembers, importedEvents, importedContent };
 }
 
 // ── SECTION TABS ─────────────────────────────────────────────
@@ -91,19 +160,6 @@ function initSectionTabs() {
 }
 
 // ── SITE CONTENT EDITOR ──────────────────────────────────────
-function parseJsonSafe(raw, fallback) {
-  try {
-    const parsed = JSON.parse(raw);
-    return parsed && typeof parsed === 'object' ? parsed : fallback;
-  } catch {
-    return fallback;
-  }
-}
-
-function readSiteContent() {
-  return parseJsonSafe(localStorage.getItem(CONTENT_STORAGE_KEY), {});
-}
-
 function setStatus(message, isError = false) {
   const status = document.getElementById('contentStatus');
   if (!status) return;
@@ -171,7 +227,7 @@ function fillSiteContentForm(content) {
   }
 }
 
-function initContentEditor() {
+async function initContentEditor() {
   if (contentEditorReady) return;
   contentEditorReady = true;
 
@@ -179,31 +235,36 @@ function initContentEditor() {
   const resetBtn = document.getElementById('contentResetBtn');
   if (!saveBtn || !resetBtn) return;
 
-  fillSiteContentForm(readSiteContent());
+  try {
+    const result = await window.TTGApi.getSiteContent();
+    fillSiteContentForm(result.content || {});
+  } catch (error) {
+    setStatus(`Unable to load content: ${error.message}`, true);
+  }
 
-  saveBtn.addEventListener('click', () => {
+  saveBtn.addEventListener('click', async () => {
     const content = getSiteContentFromForm();
-    localStorage.setItem(CONTENT_STORAGE_KEY, JSON.stringify(content));
-    setStatus('Website content saved. Refresh the main site to see changes.');
+    try {
+      await window.TTGApi.saveSiteContent(content);
+      setStatus('Website content saved. Refresh the main site to see changes.');
+    } catch (error) {
+      setStatus(`Unable to save content: ${error.message}`, true);
+    }
   });
 
-  resetBtn.addEventListener('click', () => {
+  resetBtn.addEventListener('click', async () => {
     if (!confirm('Reset website content to defaults? This clears saved custom content.')) return;
-    localStorage.removeItem(CONTENT_STORAGE_KEY);
-    fillSiteContentForm({});
-    setStatus('Website content reset to default values.');
+    try {
+      await window.TTGApi.resetSiteContent();
+      fillSiteContentForm({});
+      setStatus('Website content reset to default values.');
+    } catch (error) {
+      setStatus(`Unable to reset content: ${error.message}`, true);
+    }
   });
 }
 
 // ── UPCOMING EVENTS MANAGER ──────────────────────────────────
-function readUpcomingEvents() {
-  const events = parseJsonSafe(localStorage.getItem(UPCOMING_EVENTS_KEY), []);
-  return Array.isArray(events) ? events : [];
-}
-
-function saveUpcomingEvents(events) {
-  localStorage.setItem(UPCOMING_EVENTS_KEY, JSON.stringify(events));
-}
 
 function setUpcomingStatus(message, isError = false) {
   const status = document.getElementById('upcomingStatus');
@@ -232,11 +293,19 @@ function formatUpcomingDate(dateValue) {
     : d.toLocaleDateString('en-AU', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
 }
 
-function renderUpcomingEvents() {
+async function renderUpcomingEvents() {
   const list = document.getElementById('upcomingEventsList');
   if (!list) return;
 
-  const events = readUpcomingEvents().sort((a, b) => {
+  let events = [];
+  try {
+    const result = await window.TTGApi.listUpcomingEvents();
+    events = result.events || [];
+  } catch (error) {
+    setUpcomingStatus(`Unable to load events: ${error.message}`, true);
+  }
+
+  events.sort((a, b) => {
     const aDate = new Date(a.date || '9999-12-31').getTime();
     const bDate = new Date(b.date || '9999-12-31').getTime();
     return aDate - bDate;
@@ -263,7 +332,7 @@ function renderUpcomingEvents() {
     `;
 
     item.querySelector('[data-action="edit"]').addEventListener('click', () => {
-      setInputValue('eventIdInput', String(event.id));
+      setInputValue('eventIdInput', String(event._id || event.id));
       setInputValue('upcomingTitleInput', event.title);
       setInputValue('upcomingDateInput', event.date);
       setInputValue('upcomingTimeInput', event.time);
@@ -275,19 +344,22 @@ function renderUpcomingEvents() {
       setUpcomingStatus(`Editing "${event.title}"`);
     });
 
-    item.querySelector('[data-action="delete"]').addEventListener('click', () => {
+    item.querySelector('[data-action="delete"]').addEventListener('click', async () => {
       if (!confirm(`Delete event "${event.title}"?`)) return;
-      const next = readUpcomingEvents().filter(e => String(e.id) !== String(event.id));
-      saveUpcomingEvents(next);
-      renderUpcomingEvents();
-      setUpcomingStatus('Event deleted.');
+      try {
+        await window.TTGApi.deleteUpcomingEvent(event._id || event.id);
+        await renderUpcomingEvents();
+        setUpcomingStatus('Event deleted.');
+      } catch (error) {
+        setUpcomingStatus(`Unable to delete event: ${error.message}`, true);
+      }
     });
 
     list.appendChild(item);
   });
 }
 
-function initUpcomingEventsManager() {
+async function initUpcomingEventsManager() {
   if (upcomingEditorReady) return;
   upcomingEditorReady = true;
 
@@ -295,14 +367,14 @@ function initUpcomingEventsManager() {
   const clearBtn = document.getElementById('upcomingClearBtn');
   if (!saveBtn || !clearBtn) return;
 
-  renderUpcomingEvents();
+  await renderUpcomingEvents();
 
   clearBtn.addEventListener('click', () => {
     clearUpcomingForm();
     setUpcomingStatus('');
   });
 
-  saveBtn.addEventListener('click', () => {
+  saveBtn.addEventListener('click', async () => {
     const id = getInputValue('eventIdInput');
     const title = getInputValue('upcomingTitleInput');
     const date = getInputValue('upcomingDateInput');
@@ -316,31 +388,41 @@ function initUpcomingEventsManager() {
       return;
     }
 
-    const all = readUpcomingEvents();
     if (id) {
-      const idx = all.findIndex(e => String(e.id) === id);
-      if (idx >= 0) {
-        all[idx] = { ...all[idx], title, date, time, location, image, description };
+      try {
+        await window.TTGApi.updateUpcomingEvent({
+          id,
+          title,
+          date,
+          time,
+          location,
+          image,
+          description,
+        });
+        setUpcomingStatus('Event updated and published.');
+      } catch (error) {
+        setUpcomingStatus(`Unable to update event: ${error.message}`, true);
+        return;
       }
-      saveUpcomingEvents(all);
-      setUpcomingStatus('Event updated and published.');
     } else {
-      all.push({
-        id: Date.now(),
-        title,
-        date,
-        time,
-        location,
-        image,
-        description,
-        createdAt: new Date().toISOString(),
-      });
-      saveUpcomingEvents(all);
-      setUpcomingStatus('Event posted successfully.');
+      try {
+        await window.TTGApi.createUpcomingEvent({
+          title,
+          date,
+          time,
+          location,
+          image,
+          description,
+        });
+        setUpcomingStatus('Event posted successfully.');
+      } catch (error) {
+        setUpcomingStatus(`Unable to post event: ${error.message}`, true);
+        return;
+      }
     }
 
     clearUpcomingForm();
-    renderUpcomingEvents();
+    await renderUpcomingEvents();
   });
 }
 
@@ -386,7 +468,7 @@ function applyFilters() {
   filtered = members.filter(m => {
     const text = `${m.firstName} ${m.lastName} ${m.email} ${m.phone} ${m.studentId}`.toLowerCase();
     if (q && !text.includes(q)) return false;
-    if (game && !m.games.includes(game)) return false;
+    if (game && !(m.games || '').includes(game)) return false;
     if (pay && m.paymentMethod !== pay) return false;
     return true;
   });
@@ -449,7 +531,7 @@ function renderTable() {
       <td class="td-muted">${m.paymentDate || '—'}</td>
       <td class="td-muted">${formatDate(m.submittedAt)}</td>
       <td>
-        <button class="btn-row-delete" data-id="${m.id}">Delete</button>
+        <button class="btn-row-delete" data-id="${m._id || m.id}">Delete</button>
       </td>
     `;
 
@@ -460,10 +542,10 @@ function renderTable() {
     });
 
     // Delete button
-    tr.querySelector('.btn-row-delete').addEventListener('click', e => {
+    tr.querySelector('.btn-row-delete').addEventListener('click', async e => {
       e.stopPropagation();
       if (confirm(`Delete ${m.firstName} ${m.lastName}? This cannot be undone.`)) {
-        deleteMember(m.id);
+        await deleteMember(m._id || m.id);
       }
     });
 
@@ -526,18 +608,19 @@ document.querySelectorAll('th[data-sort]').forEach(th => {
 });
 
 // ── DELETE ────────────────────────────────────────────────────
-function deleteMember(id) {
-  members = members.filter(m => m.id !== id);
-  saveMembers();
-  loadMembers();
-  if (activeModal === id) closeModal();
+async function deleteMember(id) {
+  await window.TTGApi.deleteMember(id);
+  await loadMembers();
+  if (activeModal === id) {
+    closeModal();
+  }
 }
 
-document.getElementById('clearAllBtn').addEventListener('click', () => {
+document.getElementById('clearAllBtn').addEventListener('click', async () => {
   if (members.length === 0) return;
   if (confirm(`Delete ALL ${members.length} member records? This cannot be undone.`)) {
-    localStorage.removeItem(STORAGE_KEY);
-    loadMembers();
+    await window.TTGApi.clearMembers();
+    await loadMembers();
   }
 });
 
@@ -547,7 +630,7 @@ const modalClose  = document.getElementById('modalClose');
 const modalDelete = document.getElementById('modalDelete');
 
 function openModal(m) {
-  activeModal = m.id;
+  activeModal = m._id || m.id;
   document.getElementById('modalName').textContent = `${m.firstName} ${m.lastName}`;
 
   const grid = document.getElementById('modalGrid');
@@ -580,9 +663,9 @@ function openModal(m) {
   modal.hidden = false;
   document.body.style.overflow = 'hidden';
 
-  modalDelete.onclick = () => {
+  modalDelete.onclick = async () => {
     if (confirm(`Delete ${m.firstName} ${m.lastName}? This cannot be undone.`)) {
-      deleteMember(m.id);
+      await deleteMember(m._id || m.id);
     }
   };
 }
@@ -608,7 +691,7 @@ document.getElementById('exportBtn').addEventListener('click', () => {
   ];
 
   const rows = members.map(m => [
-    m.id, m.firstName, m.lastName, m.studentId, m.email, m.phone,
+    m._id || m.id, m.firstName, m.lastName, m.studentId, m.email, m.phone,
     m.emergencyName, m.emergencyNumber, m.games, paymentLabel(m.paymentMethod),
     m.paymentDate, m.submittedAt, m.message
   ].map(v => `"${String(v ?? '').replace(/"/g, '""')}"`));
@@ -622,3 +705,16 @@ document.getElementById('exportBtn').addEventListener('click', () => {
   a.click();
   URL.revokeObjectURL(url);
 });
+
+async function restoreAdminSessionOnLoad() {
+  const token = sessionStorage.getItem('ttg_admin_session');
+  if (!token) return;
+  try {
+    await window.TTGApi.checkSession();
+    await unlock();
+  } catch {
+    sessionStorage.removeItem('ttg_admin_session');
+  }
+}
+
+restoreAdminSessionOnLoad();

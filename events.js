@@ -1,16 +1,3 @@
-const UPCOMING_EVENTS_KEY = 'ttg_upcoming_events';
-
-function parseEvents() {
-  try {
-    const raw = localStorage.getItem(UPCOMING_EVENTS_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
-}
-
 function formatDate(value) {
   if (!value) return 'Date TBC';
   const d = new Date(value);
@@ -25,18 +12,18 @@ function esc(str) {
   return d.innerHTML;
 }
 
-function renderEvents() {
+function renderEvents(events) {
   const list = document.getElementById('eventsList');
   const empty = document.getElementById('eventsEmpty');
   if (!list || !empty) return;
 
-  const events = parseEvents().sort((a, b) => {
+  const sortedEvents = events.slice().sort((a, b) => {
     const aDate = new Date(a.date || '9999-12-31').getTime();
     const bDate = new Date(b.date || '9999-12-31').getTime();
     return aDate - bDate;
   });
 
-  if (events.length === 0) {
+  if (sortedEvents.length === 0) {
     list.innerHTML = '';
     empty.hidden = false;
     return;
@@ -45,7 +32,7 @@ function renderEvents() {
   empty.hidden = true;
   list.innerHTML = '';
 
-  events.forEach(event => {
+  sortedEvents.forEach(event => {
     const card = document.createElement('article');
     card.className = 'event-card';
     card.innerHTML = `
@@ -62,4 +49,14 @@ function renderEvents() {
   });
 }
 
-renderEvents();
+async function loadUpcomingEvents() {
+  try {
+    const result = await window.TTGApi.listUpcomingEvents();
+    renderEvents(result.events || []);
+  } catch (error) {
+    console.error('Unable to load upcoming events:', error);
+    renderEvents([]);
+  }
+}
+
+loadUpcomingEvents();
