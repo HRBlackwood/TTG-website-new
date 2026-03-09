@@ -49,9 +49,14 @@
     </header>
 
     <main class="admin-main">
+      <div class="admin-section-tabs" role="tablist" aria-label="Admin sections">
+        <button class="admin-tab is-active" data-admin-tab="members" type="button">Members</button>
+        <button class="admin-tab" data-admin-tab="website" type="button">Website Editor</button>
+        <button class="admin-tab" data-admin-tab="events" type="button">Events Posting</button>
+      </div>
 
       <!-- Stats row -->
-      <div class="stats-row" id="statsRow">
+      <div class="stats-row" id="statsRow" data-admin-section="members">
         <div class="stat-tile">
           <span class="stat-tile-number" id="statTotal">0</span>
           <span class="stat-tile-label">Total Members</span>
@@ -70,8 +75,169 @@
         </div>
       </div>
 
+      <!-- Site content editor -->
+      <section class="content-editor" data-admin-section="website" hidden>
+        <div class="editor-header">
+          <div>
+            <h2>Website Content Editor</h2>
+            <p>Edit website text, images, events, and timetable content shown on <code>index.html</code>.</p>
+          </div>
+          <div class="editor-actions">
+            <a href="index.html" target="_blank" rel="noopener noreferrer" class="btn-secondary">Open Live Site</a>
+            <button id="contentResetBtn" class="btn-ghost-sm" type="button">Reset Content</button>
+            <button id="contentSaveBtn" class="btn-secondary" type="button">Save Content</button>
+          </div>
+        </div>
+
+        <p id="contentStatus" class="content-status" aria-live="polite"></p>
+
+        <div class="editor-grid">
+          <div class="editor-card">
+            <h3>Text Content</h3>
+            <label for="heroSubtitleInput">Hero subtitle</label>
+            <textarea id="heroSubtitleInput" rows="3" placeholder="Hero subtitle text"></textarea>
+
+            <label for="aboutLeadInput">About lead paragraph</label>
+            <textarea id="aboutLeadInput" rows="4" placeholder="Lead paragraph text"></textarea>
+
+            <label for="meetingWhenInput">Meeting “When” text</label>
+            <input id="meetingWhenInput" type="text" placeholder="Mon & Fri ... · Wed ... · Sat ..." />
+
+            <label for="meetingWhereInput">Meeting “Where” text</label>
+            <input id="meetingWhereInput" type="text" placeholder="Building 27, JCU Townsville ..." />
+
+            <label for="meetingMembershipInput">Meeting “Membership” text</label>
+            <input id="meetingMembershipInput" type="text" placeholder="$5 students · $10 non-students ..." />
+          </div>
+
+          <div class="editor-card">
+            <h3>Images</h3>
+            <label for="dndLogoInput">D&D logo image path/URL</label>
+            <input id="dndLogoInput" type="text" placeholder="dnd-logo.png or https://..." />
+
+            <label for="warhammerLogoInput">Warhammer logo image path/URL</label>
+            <input id="warhammerLogoInput" type="text" placeholder="warhammer-logo.png or https://..." />
+
+            <label for="mtgLogoInput">MTG logo image path/URL</label>
+            <input id="mtgLogoInput" type="text" placeholder="mtg-logo.png or https://..." />
+
+            <label for="eventsPosterInput">Events poster image path/URL</label>
+            <input id="eventsPosterInput" type="text" placeholder="events-poster.png or https://..." />
+          </div>
+        </div>
+
+        <h3 class="editor-section-title">Events & Timetable</h3>
+        <div class="editor-grid editor-grid--events">
+          <div class="editor-card">
+            <h4>Event 1</h4>
+            <label for="event1DayInput">Day label</label>
+            <input id="event1DayInput" type="text" placeholder="MON" />
+            <label for="event1TitleInput">Event title</label>
+            <input id="event1TitleInput" type="text" placeholder="TTRPG Night" />
+            <label for="event1DescInput">Description</label>
+            <textarea id="event1DescInput" rows="3"></textarea>
+            <label for="event1TimeInput">Time</label>
+            <input id="event1TimeInput" type="text" placeholder="🕠 5:30 PM – 11:00 PM" />
+            <label for="event1LocationInput">Location</label>
+            <input id="event1LocationInput" type="text" placeholder="📍 Building 27, Room 3/4" />
+          </div>
+
+          <div class="editor-card">
+            <h4>Event 2</h4>
+            <label for="event2DayInput">Day label</label>
+            <input id="event2DayInput" type="text" placeholder="WED" />
+            <label for="event2TitleInput">Event title</label>
+            <input id="event2TitleInput" type="text" placeholder="Board & Card Games" />
+            <label for="event2DescInput">Description</label>
+            <textarea id="event2DescInput" rows="3"></textarea>
+            <label for="event2TimeInput">Time</label>
+            <input id="event2TimeInput" type="text" placeholder="🕠 5:30 PM – 11:00 PM" />
+            <label for="event2LocationInput">Location</label>
+            <input id="event2LocationInput" type="text" placeholder="📍 Building 27, Room 4" />
+          </div>
+
+          <div class="editor-card">
+            <h4>Event 3</h4>
+            <label for="event3DayInput">Day label</label>
+            <input id="event3DayInput" type="text" placeholder="FRI" />
+            <label for="event3TitleInput">Event title</label>
+            <input id="event3TitleInput" type="text" placeholder="TTRPG Night" />
+            <label for="event3DescInput">Description</label>
+            <textarea id="event3DescInput" rows="3"></textarea>
+            <label for="event3TimeInput">Time</label>
+            <input id="event3TimeInput" type="text" placeholder="🕠 5:30 PM – 11:00 PM" />
+            <label for="event3LocationInput">Location</label>
+            <input id="event3LocationInput" type="text" placeholder="📍 Building 27, Room 3/4" />
+          </div>
+
+          <div class="editor-card">
+            <h4>Event 4</h4>
+            <label for="event4DayInput">Day label</label>
+            <input id="event4DayInput" type="text" placeholder="SAT" />
+            <label for="event4TitleInput">Event title</label>
+            <input id="event4TitleInput" type="text" placeholder="Variety Games" />
+            <label for="event4DescInput">Description</label>
+            <textarea id="event4DescInput" rows="3"></textarea>
+            <label for="event4TimeInput">Time</label>
+            <input id="event4TimeInput" type="text" placeholder="🕙 11:00 AM – 5:00 PM" />
+            <label for="event4LocationInput">Location</label>
+            <input id="event4LocationInput" type="text" placeholder="📍 Building 27, Room 5" />
+          </div>
+        </div>
+      </section>
+
+      <!-- Upcoming events manager -->
+      <section class="content-editor" data-admin-section="events" hidden>
+        <div class="editor-header">
+          <div>
+            <h2>Upcoming Events Manager</h2>
+            <p>Create and publish events that appear on the public <code>events.html</code> page.</p>
+          </div>
+          <div class="editor-actions">
+            <a href="events.html" target="_blank" rel="noopener noreferrer" class="btn-secondary">Open Events Page</a>
+          </div>
+        </div>
+
+        <p id="upcomingStatus" class="content-status" aria-live="polite"></p>
+
+        <div class="editor-grid">
+          <div class="editor-card">
+            <h3>Post Event</h3>
+            <input id="eventIdInput" type="hidden" />
+
+            <label for="upcomingTitleInput">Event title</label>
+            <input id="upcomingTitleInput" type="text" placeholder="Friday Night Commander" />
+
+            <label for="upcomingDateInput">Date</label>
+            <input id="upcomingDateInput" type="date" />
+
+            <label for="upcomingTimeInput">Time</label>
+            <input id="upcomingTimeInput" type="text" placeholder="6:00 PM - 10:00 PM" />
+
+            <label for="upcomingLocationInput">Location</label>
+            <input id="upcomingLocationInput" type="text" placeholder="Building 27, Room 4" />
+
+            <label for="upcomingImageInput">Image path/URL (optional)</label>
+            <input id="upcomingImageInput" type="text" placeholder="events-poster.png or https://..." />
+
+            <label for="upcomingDescriptionInput">Description</label>
+            <textarea id="upcomingDescriptionInput" rows="4" placeholder="Event details, format, entry requirements, etc."></textarea>
+
+            <div class="editor-actions">
+              <button id="upcomingSaveBtn" class="btn-secondary" type="button">Post Event</button>
+              <button id="upcomingClearBtn" class="btn-ghost-sm" type="button">Clear Form</button>
+            </div>
+          </div>
+
+          <div class="editor-card">
+            <h3>Posted Events</h3>
+            <div id="upcomingEventsList" class="upcoming-list"></div>
+          </div>
+        </div>
+      </section>
+
       <!-- Controls -->
-      <div class="table-controls">
+      <div class="table-controls" data-admin-section="members">
         <input type="search" id="searchInput" placeholder="Search by name, email, student ID…" />
         <div class="filter-group">
           <select id="filterGame">
@@ -92,7 +258,7 @@
       </div>
 
       <!-- Table -->
-      <div class="table-wrapper">
+      <div class="table-wrapper" data-admin-section="members">
         <table id="memberTable">
           <thead>
             <tr>
@@ -123,7 +289,7 @@
         </div>
       </div>
 
-      <div class="table-footer" id="tableFooter">
+      <div class="table-footer" id="tableFooter" data-admin-section="members">
         <span id="resultCount"></span>
         <button id="clearAllBtn" class="btn-danger">Delete All Records</button>
       </div>

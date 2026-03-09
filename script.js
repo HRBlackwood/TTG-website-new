@@ -2,6 +2,78 @@
    TABLE TOP GUILD — SCRIPTS
 ═══════════════════════════════════════════════════════════════ */
 
+const SITE_CONTENT_STORAGE_KEY = 'ttg_site_content';
+
+function parseSiteContent() {
+  try {
+    const raw = localStorage.getItem(SITE_CONTENT_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === 'object' ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+function setText(selector, value) {
+  if (!value) return;
+  const node = document.querySelector(selector);
+  if (node) node.textContent = value;
+}
+
+function setImage(selectors, value) {
+  if (!value) return;
+  selectors.forEach(selector => {
+    document.querySelectorAll(selector).forEach(img => {
+      img.src = value;
+    });
+  });
+}
+
+function applyEventCard(card, eventData) {
+  if (!card || !eventData) return;
+  if (eventData.day) {
+    const day = card.querySelector('.schedule-day');
+    if (day) day.textContent = eventData.day;
+  }
+  if (eventData.title) {
+    const title = card.querySelector('h3');
+    if (title) title.textContent = eventData.title;
+  }
+  if (eventData.description) {
+    const desc = card.querySelector('.schedule-body > p');
+    if (desc) desc.textContent = eventData.description;
+  }
+  const meta = card.querySelectorAll('.schedule-meta li');
+  if (eventData.time && meta[0]) meta[0].textContent = eventData.time;
+  if (eventData.location && meta[1]) meta[1].textContent = eventData.location;
+}
+
+function applySiteContentCustomizations() {
+  const content = parseSiteContent();
+  if (!content) return;
+
+  setText('.hero-subtitle', content.heroSubtitle);
+  setText('.about-text .lead', content.aboutLead);
+  setText('.meeting-info .meeting-card:nth-child(1) p', content.meetingWhen);
+  setText('.meeting-info .meeting-card:nth-child(2) p', content.meetingWhere);
+  setText('.meeting-info .meeting-card:nth-child(3) p', content.meetingMembership);
+
+  setImage(['img[alt="Dungeons & Dragons logo"]', 'img[alt="D&D"]'], content.dndLogo);
+  setImage(['img[alt="Warhammer logo"]', 'img[alt="Warhammer 40K"]'], content.warhammerLogo);
+  setImage(['img[alt="Magic: The Gathering logo"]', 'img[alt="Magic: TG"]'], content.mtgLogo);
+  setImage(['.events-poster img'], content.eventsPoster);
+
+  const cards = document.querySelectorAll('.schedule-grid .schedule-card');
+  if (Array.isArray(content.events)) {
+    content.events.slice(0, cards.length).forEach((eventData, idx) => {
+      applyEventCard(cards[idx], eventData);
+    });
+  }
+}
+
+applySiteContentCustomizations();
+
 // ── NAVBAR SCROLL EFFECT ────────────────────────────────────
 const navbar = document.getElementById('navbar');
 

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TTG Upcoming Events</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="events.css" />
+</head>
+<body>
+  <header class="events-header">
+    <div class="events-header-inner">
+      <div>
+        <p class="eyebrow">Townsville Tabletop Guild</p>
+        <h1>Upcoming Events</h1>
+      </div>
+      <div class="header-actions">
+        <a href="index.html" class="btn">Back to Main Site</a>
+        <a href="admin.html" class="btn btn-alt">Admin</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="events-main">
+    <section class="events-panel">
+      <h2>What's Coming Up</h2>
+      <p class="panel-desc">Events posted by admins appear here automatically.</p>
+      <div id="eventsList" class="events-list"></div>
+      <div id="eventsEmpty" class="events-empty" hidden>
+        <h3>No upcoming events yet</h3>
+        <p>Check back soon for the next session announcements.</p>
+      </div>
+    </section>
+  </main>
+
+  <script src="events.js"></script>
+</body>
+</html>
