@@ -1,16 +1,3 @@
-const UPCOMING_EVENTS_KEY = 'ttg_upcoming_events';
-
-function parseEvents() {
-  try {
-    const raw = localStorage.getItem(UPCOMING_EVENTS_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
-}
-
 function formatDate(value) {
   if (!value) return 'Date TBC';
   const d = new Date(value);
@@ -62,4 +49,19 @@ function renderEvents(events) {
   });
 }
 
-renderEvents(parseEvents());
+async function loadEvents() {
+  if (!window.FirebaseAPI?.isConfigured?.()) {
+    renderEvents([]);
+    return;
+  }
+  try {
+    const all = await window.FirebaseAPI.listEvents();
+    const visible = all.filter((event) => (event.status || 'upcoming') !== 'archived');
+    renderEvents(visible);
+  } catch (error) {
+    console.error('Failed to load events:', error);
+    renderEvents([]);
+  }
+}
+
+loadEvents();

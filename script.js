@@ -2,19 +2,6 @@
    TABLE TOP GUILD — SCRIPTS
 ═══════════════════════════════════════════════════════════════ */
 
-const SITE_CONTENT_STORAGE_KEY = 'ttg_site_content';
-
-function parseSiteContent() {
-  try {
-    const raw = localStorage.getItem(SITE_CONTENT_STORAGE_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw);
-    return parsed && typeof parsed === 'object' ? parsed : null;
-  } catch {
-    return null;
-  }
-}
-
 function setText(selector, value) {
   if (!value) return;
   const node = document.querySelector(selector);
@@ -71,7 +58,17 @@ function applySiteContentCustomizations(content) {
   }
 }
 
-applySiteContentCustomizations(parseSiteContent());
+async function loadSiteContent() {
+  if (!window.FirebaseAPI?.isConfigured?.()) return;
+  try {
+    const content = await window.FirebaseAPI.getSiteContent();
+    applySiteContentCustomizations(content || {});
+  } catch (error) {
+    console.error('Failed to load site content:', error);
+  }
+}
+
+loadSiteContent();
 
 // ── NAVBAR SCROLL EFFECT ────────────────────────────────────
 const navbar = document.getElementById('navbar');
@@ -313,9 +310,15 @@ form.addEventListener('submit', async (e) => {
   submitBtn.querySelector('.btn-text').textContent = 'Rolling…';
   submitBtn.querySelector('.btn-icon').textContent = '⏳';
 
-  const existing = JSON.parse(localStorage.getItem('ttg_members') || '[]');
-  existing.push(member);
-  localStorage.setItem('ttg_members', JSON.stringify(existing));
+  try {
+    await window.FirebaseAPI.createMembership(member);
+  } catch (error) {
+    submitBtn.disabled = false;
+    submitBtn.querySelector('.btn-text').textContent = 'Roll for Membership';
+    submitBtn.querySelector('.btn-icon').textContent = '🎲';
+    alert(`Unable to submit right now: ${error.message}`);
+    return;
+  }
 
   // Show success
   form.hidden = true;

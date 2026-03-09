@@ -2,7 +2,6 @@
    TTG ADMIN DASHBOARD — SCRIPT
 ═══════════════════════════════════════════════════════════════ */
 
-const ADMIN_PASSWORD = 'TTGadmin2026';
 const STORAGE_KEY = 'ttg_members';
 const CONTENT_STORAGE_KEY = 'ttg_site_content';
 const UPCOMING_EVENTS_KEY = 'ttg_upcoming_events';
@@ -23,42 +22,87 @@ const dashboard    = document.getElementById('dashboard');
 const loginForm    = document.getElementById('loginForm');
 const loginError   = document.getElementById('loginError');
 
-loginForm.addEventListener('submit', e => {
+loginForm.addEventListener('submit', async e => {
   e.preventDefault();
+  if (!window.FirebaseAPI?.isConfigured?.()) {
+    loginError.textContent = 'Firebase is not configured. Update firebase-config.js.';
+    return;
+  }
+  const email = document.getElementById('adminEmail').value.trim();
   const pw = document.getElementById('adminPassword').value;
-  if (pw === ADMIN_PASSWORD) {
-    unlock();
-  } else {
-    loginError.textContent = 'Incorrect password. Please try again.';
+  try {
+    await window.FirebaseAPI.signInAdmin(email, pw);
+    await unlock();
+  } catch (error) {
+    loginError.textContent = error?.message || 'Login failed.';
     document.getElementById('adminPassword').value = '';
     document.getElementById('adminPassword').focus();
   }
 });
 
-function unlock() {
+async function unlock() {
   loginScreen.hidden = true;
   dashboard.hidden   = false;
   initSectionTabs();
-  loadMembers();
-  initContentEditor();
-  initUpcomingEventsManager();
+  await loadMembers();
+  await initContentEditor();
+  await initUpcomingEventsManager();
 }
 
-document.getElementById('logoutBtn').addEventListener('click', () => {
+document.getElementById('logoutBtn').addEventListener('click', async () => {
+  if (window.FirebaseAPI?.isConfigured?.()) {
+    try {
+      await window.FirebaseAPI.signOutAdmin();
+    } catch {
+      // no-op
+    }
+  }
   loginScreen.hidden = false;
   dashboard.hidden   = true;
+  document.getElementById('adminEmail').value = '';
   document.getElementById('adminPassword').value = '';
   loginError.textContent = '';
 });
 
+document.getElementById('migrateLocalBtn').addEventListener('click', async () => {
+  if (!confirm('Import local browser data into Firebase now?')) return;
+  try {
+    const legacyMembers = parseJsonSafe(localStorage.getItem(STORAGE_KEY), []);
+    const legacyEvents = parseJsonSafe(localStorage.getItem(UPCOMING_EVENTS_KEY), []);
+    const legacyContent = parseJsonSafe(localStorage.getItem(CONTENT_STORAGE_KEY), {});
+
+    const membersResult = await window.FirebaseAPI.importMemberships(Array.isArray(legacyMembers) ? legacyMembers : []);
+    const eventsResult = await window.FirebaseAPI.importEvents(Array.isArray(legacyEvents) ? legacyEvents : []);
+    let contentMigrated = false;
+    if (legacyContent && typeof legacyContent === 'object' && Object.keys(legacyContent).length > 0) {
+      await window.FirebaseAPI.saveSiteContent(legacyContent);
+      contentMigrated = true;
+    }
+
+    await loadMembers();
+    await renderUpcomingEvents();
+    const content = await window.FirebaseAPI.getSiteContent();
+    fillSiteContentForm(content || {});
+
+    alert(
+      `Migration complete.\nMembers imported: ${membersResult.imported}\nEvents imported: ${eventsResult.imported}\nContent migrated: ${contentMigrated ? 'Yes' : 'No'}`
+    );
+  } catch (error) {
+    alert(`Migration failed: ${error.message}`);
+  }
+});
+
 // ── DATA ─────────────────────────────────────────────────────
-function loadMembers() {
-  members = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+async function loadMembers() {
+  if (!window.FirebaseAPI?.isConfigured?.()) {
+    members = [];
+    applyFilters();
+    renderStats();
+    return;
+  }
+  members = await window.FirebaseAPI.listMemberships();
   applyFilters();
   renderStats();
-}
-function saveMembers() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(members));
 }
 
 // ── SECTION TABS ─────────────────────────────────────────────
@@ -97,10 +141,6 @@ function parseJsonSafe(raw, fallback) {
   } catch {
     return fallback;
   }
-}
-
-function readSiteContent() {
-  return parseJsonSafe(localStorage.getItem(CONTENT_STORAGE_KEY), {});
 }
 
 function setStatus(message, isError = false) {
@@ -170,7 +210,7 @@ function fillSiteContentForm(content) {
   }
 }
 
-function initContentEditor() {
+async function initContentEditor() {
   if (contentEditorReady) return;
   contentEditorReady = true;
 
@@ -178,32 +218,36 @@ function initContentEditor() {
   const resetBtn = document.getElementById('contentResetBtn');
   if (!saveBtn || !resetBtn) return;
 
-  fillSiteContentForm(readSiteContent());
+  try {
+    const content = await window.FirebaseAPI.getSiteContent();
+    fillSiteContentForm(content || {});
+  } catch (error) {
+    setStatus(`Unable to load content: ${error.message}`, true);
+  }
 
-  saveBtn.addEventListener('click', () => {
+  saveBtn.addEventListener('click', async () => {
     const content = getSiteContentFromForm();
-    localStorage.setItem(CONTENT_STORAGE_KEY, JSON.stringify(content));
-    setStatus('Website content saved. Refresh the main site to see changes.');
+    try {
+      await window.FirebaseAPI.saveSiteContent(content);
+      setStatus('Website content saved. Refresh the main site to see changes.');
+    } catch (error) {
+      setStatus(`Unable to save content: ${error.message}`, true);
+    }
   });
 
-  resetBtn.addEventListener('click', () => {
+  resetBtn.addEventListener('click', async () => {
     if (!confirm('Reset website content to defaults? This clears saved custom content.')) return;
-    localStorage.removeItem(CONTENT_STORAGE_KEY);
-    fillSiteContentForm({});
-    setStatus('Website content reset to default values.');
+    try {
+      await window.FirebaseAPI.resetSiteContent();
+      fillSiteContentForm({});
+      setStatus('Website content reset to default values.');
+    } catch (error) {
+      setStatus(`Unable to reset content: ${error.message}`, true);
+    }
   });
 }
 
 // ── UPCOMING EVENTS MANAGER ──────────────────────────────────
-function readUpcomingEvents() {
-  const events = parseJsonSafe(localStorage.getItem(UPCOMING_EVENTS_KEY), []);
-  return Array.isArray(events) ? events : [];
-}
-
-function saveUpcomingEvents(events) {
-  localStorage.setItem(UPCOMING_EVENTS_KEY, JSON.stringify(events));
-}
-
 function setUpcomingStatus(message, isError = false) {
   const status = document.getElementById('upcomingStatus');
   if (!status) return;
@@ -231,11 +275,18 @@ function formatUpcomingDate(dateValue) {
     : d.toLocaleDateString('en-AU', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
 }
 
-function renderUpcomingEvents() {
+async function renderUpcomingEvents() {
   const list = document.getElementById('upcomingEventsList');
   if (!list) return;
 
-  const events = readUpcomingEvents().sort((a, b) => {
+  let events = [];
+  try {
+    events = await window.FirebaseAPI.listEvents();
+  } catch (error) {
+    setUpcomingStatus(`Unable to load events: ${error.message}`, true);
+  }
+
+  events = events.slice().sort((a, b) => {
     const aDate = new Date(a.date || '9999-12-31').getTime();
     const bDate = new Date(b.date || '9999-12-31').getTime();
     return aDate - bDate;
@@ -274,19 +325,22 @@ function renderUpcomingEvents() {
       setUpcomingStatus(`Editing "${event.title}"`);
     });
 
-    item.querySelector('[data-action="delete"]').addEventListener('click', () => {
+    item.querySelector('[data-action="delete"]').addEventListener('click', async () => {
       if (!confirm(`Delete event "${event.title}"?`)) return;
-      const next = readUpcomingEvents().filter(e => String(e.id) !== String(event.id));
-      saveUpcomingEvents(next);
-      renderUpcomingEvents();
-      setUpcomingStatus('Event deleted.');
+      try {
+        await window.FirebaseAPI.deleteEvent(event.id);
+        await renderUpcomingEvents();
+        setUpcomingStatus('Event deleted.');
+      } catch (error) {
+        setUpcomingStatus(`Unable to delete event: ${error.message}`, true);
+      }
     });
 
     list.appendChild(item);
   });
 }
 
-function initUpcomingEventsManager() {
+async function initUpcomingEventsManager() {
   if (upcomingEditorReady) return;
   upcomingEditorReady = true;
 
@@ -294,14 +348,14 @@ function initUpcomingEventsManager() {
   const clearBtn = document.getElementById('upcomingClearBtn');
   if (!saveBtn || !clearBtn) return;
 
-  renderUpcomingEvents();
+  await renderUpcomingEvents();
 
   clearBtn.addEventListener('click', () => {
     clearUpcomingForm();
     setUpcomingStatus('');
   });
 
-  saveBtn.addEventListener('click', () => {
+  saveBtn.addEventListener('click', async () => {
     const id = getInputValue('eventIdInput');
     const title = getInputValue('upcomingTitleInput');
     const date = getInputValue('upcomingDateInput');
@@ -315,31 +369,23 @@ function initUpcomingEventsManager() {
       return;
     }
 
-    const all = readUpcomingEvents();
-    if (id) {
-      const idx = all.findIndex(e => String(e.id) === id);
-      if (idx >= 0) {
-        all[idx] = { ...all[idx], title, date, time, location, image, description };
-      }
-      saveUpcomingEvents(all);
-      setUpcomingStatus('Event updated and published.');
-    } else {
-      all.push({
-        id: Date.now(),
+    try {
+      await window.FirebaseAPI.saveEvent({
+        id: id || undefined,
         title,
         date,
         time,
         location,
         image,
         description,
-        createdAt: new Date().toISOString(),
+        status: 'upcoming',
       });
-      saveUpcomingEvents(all);
-      setUpcomingStatus('Event posted successfully.');
+      setUpcomingStatus(id ? 'Event updated and published.' : 'Event posted successfully.');
+      clearUpcomingForm();
+      await renderUpcomingEvents();
+    } catch (error) {
+      setUpcomingStatus(`Unable to save event: ${error.message}`, true);
     }
-
-    clearUpcomingForm();
-    renderUpcomingEvents();
   });
 }
 
@@ -459,10 +505,10 @@ function renderTable() {
     });
 
     // Delete button
-    tr.querySelector('.btn-row-delete').addEventListener('click', e => {
+    tr.querySelector('.btn-row-delete').addEventListener('click', async e => {
       e.stopPropagation();
       if (confirm(`Delete ${m.firstName} ${m.lastName}? This cannot be undone.`)) {
-        deleteMember(m.id);
+        await deleteMember(m.id);
       }
     });
 
@@ -525,18 +571,17 @@ document.querySelectorAll('th[data-sort]').forEach(th => {
 });
 
 // ── DELETE ────────────────────────────────────────────────────
-function deleteMember(id) {
-  members = members.filter(m => m.id !== id);
-  saveMembers();
-  loadMembers();
+async function deleteMember(id) {
+  await window.FirebaseAPI.deleteMembership(id);
+  await loadMembers();
   if (activeModal === id) closeModal();
 }
 
-document.getElementById('clearAllBtn').addEventListener('click', () => {
+document.getElementById('clearAllBtn').addEventListener('click', async () => {
   if (members.length === 0) return;
   if (confirm(`Delete ALL ${members.length} member records? This cannot be undone.`)) {
-    localStorage.removeItem(STORAGE_KEY);
-    loadMembers();
+    await window.FirebaseAPI.clearMemberships();
+    await loadMembers();
   }
 });
 
@@ -579,9 +624,9 @@ function openModal(m) {
   modal.hidden = false;
   document.body.style.overflow = 'hidden';
 
-  modalDelete.onclick = () => {
+  modalDelete.onclick = async () => {
     if (confirm(`Delete ${m.firstName} ${m.lastName}? This cannot be undone.`)) {
-      deleteMember(m.id);
+      await deleteMember(m.id);
     }
   };
 }
@@ -621,4 +666,20 @@ document.getElementById('exportBtn').addEventListener('click', () => {
   a.click();
   URL.revokeObjectURL(url);
 });
+
+if (window.FirebaseAPI?.isConfigured?.()) {
+  window.FirebaseAPI.onAuthStateChanged(async (user) => {
+    if (user) {
+      try {
+        await unlock();
+      } catch {
+        loginScreen.hidden = false;
+        dashboard.hidden = true;
+      }
+    } else {
+      loginScreen.hidden = false;
+      dashboard.hidden = true;
+    }
+  });
+}
 
