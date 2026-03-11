@@ -22,8 +22,8 @@
   --red-light:    #c0392b;
 
   --text-primary: #f0e6d3;
-  --text-secondary:#a89880;
-  --text-muted:   #6b5f52;
+  --text-secondary:#c2b39f;
+  --text-muted:   #948675;
 
   --border:       rgba(201,162,39,.18);
   --border-hover: rgba(201,162,39,.45);
@@ -1387,12 +1387,19 @@ input[type="date"].invalid { border-color: var(--red-light) !important; }
   :root { --nav-h: 60px; }
   section { padding: 72px 0; }
 
+  /* Mobile contrast boost for readability */
+  :root {
+    --text-secondary: #d8cdbc;
+    --text-muted: #b9aa96;
+    --border: rgba(232,197,71,.3);
+  }
+
   .nav-toggle { display: flex; }
   .nav-links {
     position: fixed;
     top: var(--nav-h);
     left: 0; right: 0;
-    background: rgba(10,10,15,.97);
+    background: rgba(7,7,12,.99);
     backdrop-filter: blur(12px);
     flex-direction: column;
     align-items: flex-start;
@@ -1410,6 +1417,7 @@ input[type="date"].invalid { border-color: var(--red-light) !important; }
     padding: 14px 24px;
     font-size: 1rem;
     border-radius: 0;
+    color: var(--text-primary);
   }
   .nav-cta {
     margin: 8px 24px !important;
@@ -1423,6 +1431,32 @@ input[type="date"].invalid { border-color: var(--red-light) !important; }
 
   .games-grid { grid-template-columns: 1fr 1fr; }
   .game-card { height: 300px; }
+  .game-card-front,
+  .game-card-back,
+  .meeting-card,
+  .event-item,
+  .schedule-card,
+  .events-notes {
+    border-color: var(--border-hover);
+  }
+  .hero-overlay { opacity: .72; }
+  .hero-subtitle {
+    color: var(--text-primary);
+    text-shadow: 0 1px 12px rgba(0,0,0,.6);
+  }
+  .section-desc,
+  .meeting-card p,
+  .event-details p,
+  .schedule-body p,
+  .notes-list li {
+    color: var(--text-secondary);
+  }
+  .event-time,
+  .game-flip-hint,
+  .footer-brand p,
+  .footer-bottom p {
+    color: var(--text-muted);
+  }
 
   .event-item { flex-direction: column; gap: 16px; }
   .event-date { flex-direction: row; width: fit-content; gap: 8px; padding: 8px 16px; }
@@ -1439,4 +1473,9 @@ input[type="date"].invalid { border-color: var(--red-light) !important; }
   .hero-title { font-size: 3rem; }
   .hero-actions { flex-direction: column; align-items: center; }
   .checkbox-grid { grid-template-columns: 1fr; }
+  .hero-content { padding-top: 120px; }
+  .btn {
+    width: 100%;
+    justify-content: center;
+  }
 }
